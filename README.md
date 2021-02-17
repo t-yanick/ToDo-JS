@@ -30,7 +30,7 @@ Access the folder where you cloned the project in your explorer and open ./dist/
 
 ## Authors
 
-👤 **Sergio Obolevich**
+👤 **Tazoh Yanick**
 
 - Github: [@t-yanick](https://github.com/t-yanick)
 - Twitter: [@ElTazoh](https://twitter.com/ElTazoh)
