@@ -1,0 +1,1 @@
+(()=>{"use strict";const s=void 0,t=s.getProjectList();s.spreadProjectListToView(t),(void 0).loadTasks()})();
