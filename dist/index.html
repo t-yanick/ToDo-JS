@@ -3,11 +3,47 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>ToDo List</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="./styles.css">
+	<title>ToDo List with JS</title>
 </head>
 
 <body>
-	<div id="content"></div>
+	<header>
+		<h1>ToDo List</h1>
+		<div class="header-selector">
+			<p style="display: none;">Show</p>
+			<select style="display: none;" id="projects-with-selector" name="projects" disabled>
+				<option value="default">All</option>
+			</select>
+			<p style="display: none;">Order By</p>
+			<select style="display: none; " id="order-by" name="order" disabled>
+				<option class="option-list" value="order-by-priority">Priority</option>
+				<option class="option-list" value="order-by-due-date">Due date</option>
+			</select>
+			<p>New Project</p>
+			<input class="input-project-name" type="text" />
+			<button class="new-project-submit">+</button>
+		</div>
+	</header>
+
+	<section>
+		<div class="new-task-text">
+			<input placeholder="Add a new task ..." id="input-todo-name" type="text" />
+			<select class="select-project"></select>
+			<input class="date-picker" type="date" placeholder="Due Date" />
+			<select class="priority-picker" placeholder="Priority">
+				<option value="low">Low</option>
+				<option value="low">Medium</option>
+				<option value="low">High</option>
+			</select>
+			<button class="new-task-submit">+</button>
+		</div>
+	</section>
+
+	<main>
+		<div class="container"></div>
+	</main>
 	<script type="text/javascript" src="./main.js"></script>
 </body>
 

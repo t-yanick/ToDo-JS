@@ -1,0 +1,102 @@
+:root {
+  --lemon-green: #d0f09c;
+	--purple: #c281eb;
+	--pink: #ed1250;
+  --poppins: "Poppins", sans-serif;
+  --sansita: "Sansita Swashed", cursive;
+	--fredoka: "Fredoka One", cursive;
+	--orange: #fbc99d;
+	--dark-blue: #042f4b;
+}
+
+* {
+    font-family: "Poppins", sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+body {
+    background-image: radial-gradient(var(--orange), var(--purple));
+		/* overflow-x: hidden; */
+		/* width: 90%; */
+}
+
+header {
+	height: 150px;
+	width: 100vw;
+	padding-top: 1rem;
+	text-shadow: 2px 2px 2px var(--lemon-green);
+	text-align: center;
+}
+
+header h1 {
+	font-size: 3rem;
+	color: white;
+	color: var(--lemon-green);
+	color: black;
+}
+
+header p {
+	color: white;
+	color: black;
+}
+
+.header-selector {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 90px;
+}
+
+.header-selector > select,
+.header-selector > input[type="text"] {
+	padding: 0.5rem;
+	margin-right: 1rem;
+	margin-left: 0.5rem;
+	font-size: 1rem;
+}
+
+.header-selector > input[type="text"] {
+	margin-right: 0
+}
+
+.new-task-text {
+	display: flex;
+	margin: auto;
+	width: 55%;
+	margin-top: 60px;
+	justify-content: center;
+}
+
+.new-task-text > input[type="text"] {
+	width: 75%;
+	padding: 0.3rem;
+	padding-left: 1rem;
+	font-size: 1.5rem;
+	border: none;
+}
+
+.new-task-text select {
+	font-size: 1rem;
+	width: 15%;
+	padding-left: 0.75rem;
+}
+
+.new-task-text button,
+.header-selector > button {
+	background: var(--lemon-green);
+	width: 45px;
+	height: 45px;
+	cursor: pointer;
+	font-size: 2rem;
+}
+
+.option-list {
+	color: var(--dark-blue);
+}
+
+main {
+	display: flex;
+	width: 100vw;
+}
