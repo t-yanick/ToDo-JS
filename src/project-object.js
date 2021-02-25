@@ -1,151 +1,56 @@
-const Dom = (function Dom() {
-	function addProjectCardDom(projectTitle, dashedProjectTitle) {
-		const cardsContainer = document.querySelector('.container');
-		const card = document.createElement('article');
-		card.className = 'project-card';
-		card.dataset.project = dashedProjectTitle;
+import { storeProjects, projectList } from "./storage.js";
 
-		const title = document.createElement('h2');
-		title.textContent = projectTitle;
+const projectFactory = (title) => {
+	const projectTodoList = [];
 
-		const btnDelete = document.createElement('button');
-		btnDelete.textContent = 'DEL';
-		btnDelete.className = 'btn-delete-project';
+	const projectTodoListTitles = [];
 
-		const ul = document.createElement('ul');
-		const btnCreateTask = document.createElement('button');
-		btnCreateTask.textContent = 'Add a new Task';
-
-		card.append(title, btnDelete, ul, btnCreateTask);
-		cardsContainer.append(card);
+	function addToProjectTodoList(todoObject) {
+		projectTodoList.push(todoObject);
 	}
 
-	function addOptionForSelect(name, value, where) {
-		const projectsViewSelector = document.querySelector('#select-project');
-		const newTaskProjectSelector = document.querySelector('#projects-view-selector');
-
-		const newViewOption = document.createElement('option');
-		newViewOption.value = value;
-		newViewOption.textContent = name;
-
-		if (where === 'list') {
-			projectsViewSelector.append(newViewOption);
-		} else if (where === 'view') {
-			newTaskProjectSelector.append(newViewOption);
-		} else {
-			window.alert('Select list or view as where option');
-		}
+	function removeFromProjectList(todoObject) {
+		projectTodoList.splice(projectTodoList.indexOf(todoObject), 1);
 	}
 
-	function createToDoDomElement(taskObject) {
-		const li = document.createElement('li');
-		const checkBoxInput = document.createElement('input');
-		checkBoxInput.setAttribute('type', 'checkbox');
-		checkBoxInput.className = 'checkbox';
-		checkBoxInput.setAttribute('name', 'done');
-
-		if (taskObject.status === true) {
-			checkBoxInput.checked = true;
-		}
-
-		const taskLabel = document.createElement('label');
-		taskLabel.setAttribute('for', 'done');
-		taskLabel.textContent = taskObject.title;
-
-		if (taskObject.status === 'true') {
-			checkBoxInput.checked = true;
-			taskLabel.classList.add('done-task-txt');
-		}
-
-		const eraseIcon = document.createElement('ing');
-		eraseIcon.src = './img/trash.svg';
-		eraseIcon.className = 'erase-icon';
-
-		const dueSpan = document.createElement('span');
-		dueSpan.style = 'color: rgba(0, 0, 0.5); float: right;';
-		dueSpan.textContent = taskObject.dueDate;
-
-		const priorityBullet = document.createElement('div');
-
-		switch (taskObject.priority) {
-			default:
-				priorityBullet.setAttribute('title', 'Low Priority');
-				priorityBullet.className = 'low-priority-circle';
-				break;
-			case 'mid':
-				priorityBullet.setAttribute('title', 'Medium Priority');
-				priorityBullet.className = 'mid-priority-circle';
-				break;
-			case 'high':
-				priorityBullet.setAttribute('title', 'High Priority');
-				priorityBullet.className = 'high-priority-circle';
-				break;
-		}
-
-		li.append(checkBoxInput, taskLabel, eraseIcon, dueSpan, priorityBullet);
-		return li;
-	}
-
-	function modalWithTaskInfo(task) {
-		const editor = document.createElement('div');
-		editor.className = 'task-editor';
-
-		const mainWindow = document.createElement('div');
-		mainWindow.className = 'task-editor-window';
-
-		const taskTitle = document.createElement('input');
-		taskTitle.className = 'text-editor-inputs';
-		taskTitle.setAttribute('type', 'text');
-		taskTitle.value = task.title;
-		taskTitle.textContent = task.title;
-
-		const taskDescription = document.createElement('textarea');
-		taskDescription.className = 'text-editor-description';
-		taskDescription.className = 'text-editor-inputs';
-		taskDescription.value = task.description;
-
-		const taskDate = document.createElement('input');
-		taskDate.className = 'text-editor-inputs';
-		taskDate.setAttribute('type', 'date');
-		taskDate.value = task.dueDate;
-
-		const taskPriority = document.createElement('select');
-		taskPriority.className = 'text-editor-inputs';
-		const optionLow = document.createElement('option');
-		optionLow.value = 'low';
-		optionLow.textContent = 'Low';
-		const optionMid = document.createElement('option');
-		optionMid.value = 'mid';
-		optionMid.textContent = 'Mid';
-		const optionHigh = document.createElement('option');
-		optionHigh.value = 'high';
-		optionHigh.textContent = 'High';
-		taskPriority.append(optionLow, optionMid, optionHigh);
-		taskPriority.value = task.priority;
-
-		const btnSave = document.createElement('button');
-		btnSave.id = 'save-changes';
-		btnSave.setAttribute('type', 'button');
-		btnSave.innerText = 'Save changes / Close';
-
-		mainWindow.append(
-			taskTitle,
-			taskDescription,
-			taskDate,
-			taskPriority,
-			btnSave,
-		);
-
-		editor.append(mainWindow);
-		return editor;
-	}
+	const removeProjectFromList = (project) => {
+		projectList.splice(projectList.indexOf(project), 1);
+	};
 
 	return {
-		addProjectCardDom,
-		addOptionForSelect,
-		createToDoDomElement,
-		modalWithTaskInfo,
+		title,
+		projectTodoList,
+		projectTodoListTitles,
+		addToProjectTodoList,
+		removeFromProjectList,
 	};
-}());
+};
 
-export default Dom;
+//Project objects stored in a list
+let projectObjectList = [];
+
+//Create the project objects and push them to the above list
+function createProjects() {
+	storeProjects.getProjectList();
+	const projectObjectListTitles = [];
+	projectObjectList.forEach((projectObject) => {
+		projectObjectListTitles.push(projectObject.title);
+	});
+	storeProjects.projectList.forEach((project) => {
+		if (!projectObjectListTitles.includes(project)) {
+			const newProject = projectFactory(project);
+			return projectObjectList.push(newProject);
+		}
+	});
+}
+
+//Remove projects from the list above
+function removeProject(project) {
+	if (projectObjectList.length > 1) {
+		projectObjectList.splice(projectObjectList.indexOf(project), 1);
+	} else if (projectObjectList.length == 1) {
+		projectObjectList = [];
+	}
+}
+
+export { projectFactory, projectObjectList, createProjects, removeProject };
