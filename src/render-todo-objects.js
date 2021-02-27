@@ -1,185 +1,397 @@
-import pureFunctions from './render-projects';
-import Dom from './project-object';
+import { todoFactory, createTodos } from "./todo-object.js";
+import { storeTodos } from "./storage.js";
 
-const F = pureFunctions();
+const content = document.querySelector("#content");
 
-const toDo = (function toDo() {
-	class ToDo {
-		constructor(
-			title,
-			description = "No description",
-			project = "Default",
-			dueDate,
-			priority,
-			status = false,
-		) {
-			this.title = title;
-			this.description = description;
-			this.project = project;
-			this.dueDate = dueDate;
-			this.priority = priority;
-			this.status = status;
-		}
-	}
+//Render all todos for a project
+const renderToDoObjects = (project) => {
+	let todoContainer = document.createElement("div");
+	todoContainer.setAttribute("id", "todoContainer");
 
-	function findIndexWithName(name, list) {
-		const tasksList = list;
-
-		let value;
-		tasksList.forEach((task) => {
-			if (task.title === name) {
-				value = tasksList.indexOf(task);
+	if (project.projectTodoList.length > 0) {
+		project.projectTodoList.forEach((i) => {
+			const todo = document.createElement("div");
+			if (i.doneStatus == "Complete") {
+				todo.setAttribute("class", "todoCompleted");
+			} else if (i.doneStatus == "Incomplete" && i.priority == "High") {
+				todo.setAttribute("class", "todoHighPriority");
+			} else if (i.doneStatus == "Incomplete" && i.priority == "Medium") {
+				todo.setAttribute("class", "todoMediumPriority");
+			} else if (i.doneStatus == "Incomplete" && i.priority == "Low") {
+				todo.setAttribute("class", "todoLowPriority");
 			}
-		});
 
-		return value;
-	}
+			const todoInfo = document.createElement("div");
+			todoInfo.setAttribute("class", "todoInfo");
 
-	function saveModalChanges(taskIndex) {
-		const tasksList = F.fetchLocalStorage('Tasks');
-		const task = tasksList[taskIndex];
+			const todoTitle = document.createElement("p");
+			todoTitle.setAttribute("class", "todoTitle");
+			todoTitle.append(i.title);
 
-		task.title = document.querySelector('.text-editor-inputs[type=text]').value;
-		task.description = document.querySelector('textarea').value;
-		task.dueDate = document.querySelector('.text-editor-inputs[type=date]').value;
-		task.priority = document.querySelector('select.text-editor-inputs').value;
+			const dueDateContainer = document.createElement("div");
+			dueDateContainer.setAttribute("class", "dueDateContainer");
 
-		tasksList[taskIndex] = task;
-		F.saveLocalStorage('Tasks', tasksList);
+			const todoDueDateHeading = document.createElement("p");
+			todoDueDateHeading.setAttribute("class", "todoDueDateHeading");
+			if (i.dueDate != undefined && i.dueDate != "") {
+				todoDueDateHeading.textContent = "Due Date: " + i.dueDate;
+			}
 
-		const body = document.querySelector('body');
-		const taskEditor = document.querySelector('.task-editor');
-		body.removeChild(taskEditor);
-		window.location.reload();
-	}
-
-	const openTaskEditor = (e) => {
-		const tasksList = F.fetchLocalStorage('Tasks');
-		const taskIndex = findIndexWithName(e.target.innerText, tasksList);
-		const currentTask = tasksList[taskIndex];
-		const body = document.querySelector('body');
-		const modal = Dom.modalWithTaskInfo(currentTask);
-		body.append(modal);
-
-		const btnSaveChanges = document.querySelector('#save-changes');
-		btnSaveChanges.addEventListener('click', () => {
-			saveModalChanges(taskIndex);
-		});
-	};
-
-	const eraseTask = (e) => {
-		if (window.confirm('Are you sure?') == true) {
-			let tasksList = F.fetchLocalStorage('Tasks');
-			const taskTitle = e.target.previousSibling.innerText;
-			const filteredList = tasksList.filter(
-				(element) => element.title !== taskTitle,
+			const todoPriorityContainer = document.createElement("div");
+			todoPriorityContainer.setAttribute(
+				"class",
+				"todoPriorityContainer"
 			);
-			tasksList = [].concat(filteredList);
-			F.saveLocalStorage('Tasks', tasksList);
 
-			const parent = e.target.parentNode.parentNode;
-			const toErase = e.target.parentNode;
+			const priorityHeading = document.createElement("p");
+			priorityHeading.setAttribute("class", "priorityHeading");
+			priorityHeading.textContent = "Priority: " + i.priority;
 
-			parent.removeChild(toErase);
-		}
-	};
-
-	const markAsDone = (e) => {
-		const tasksList = F.fetchLocalStorage('Tasks');
-		tasksList.forEach((task) => {
-			if (task.title === e.target.nextSibling.innerText && e.target.checked) {
-				task.status = true;
-			} else if (
-				task.title === e.target.nextSibling.innerText && !e.target.checked
-			) {
-				task.status = false;
+			const todoNote = document.createElement("p");
+			todoNote.setAttribute("class", "todoNote");
+			if (i.note != undefined && todo.note != "") {
+				todoNote.textContent = "Note: \n" + i.note;
 			}
-		});
-		F.saveLocalStorage('Tasks', tasksList);
-	};
 
-	const addEventListeners = () => {
-		const checkboxes = document.querySelectorAll('.checkbox');
-		checkboxes.forEach((checkbox) => {
-			checkbox.addEventListener('change', markAsDone);
-		});
+			dueDateContainer.append(todoDueDateHeading);
+			todoPriorityContainer.append(priorityHeading);
+			todoInfo.append(
+				todoTitle,
+				dueDateContainer,
+				todoPriorityContainer,
+				todoNote
+			);
+			todo.append(todoInfo);
 
-		const labels = document.querySelectorAll('label');
-		checkboxes.forEach((label) => {
-			label.addEventListener('click', openTaskEditor);
-		});
-
-		const eraseIcons = document.querySelectorAll('.erase-icon');
-		checkboxes.forEach((eraseIcon) => {
-			eraseIcon.addEventListener('click', eraseTask);
-		});
-	};
-
-	const addToDo = (
-		description = 'Default Description',
-		title,
-		project,
-		dueDate,
-		priority,
-		status = false,
-		loading = false,
-	) => {
-		if (title === '') {
-			return alert("A task cannot be empty.");
-		}
-
-		description = 'Default Description';
-		const toDo = new ToDo(
-			title,
-			description,
-			project,
-			dueDate,
-			priority,
-			status,
-		);
-		const card = document.querySelector(
-			`article.project-card[data-project="${project}"]`,
-		);
-
-		const ul = document.createElement('ul');
-		const taskLi = Dom.createToDoDomElement(toDo);
-		ul.append(taskLi);
-		card.append(ul);
-
-		if (loading === false) {
-			const taskList = F.fetchLocalStorage('Tasks');
-			taskList.push(toDo);
-			F.saveLocalStorage('Tasks', taskList);
-		}
-
-		document.querySelector('#input-todo-name').value = '';
-		document.querySelector('.date-picker').value = '';
-		addEventListeners();
-	};
-
-	const loadTasks = () => {
-		const tasksList = F.fetchLocalStorage('Tasks');
-		tasksList.forEach((task) => {
-			if (
-				localStorage
-					.getItem('Projects')
-					.includes(F.urlUndashedName(task.project))
-			) {
-				addToDo(
-					task.description,
-					task.title,
-					task.project,
-					task.dueDate,
-					task.priority,
-					task.status,
-					true,
+			//Todo remove functionality
+			const todoRemoveBtn = document.createElement("button");
+			todoRemoveBtn.setAttribute("class", "todoRemoveBtn");
+			todoRemoveBtn.textContent = "X";
+			todoRemoveBtn.addEventListener("click", (e) => {
+				project.removeFromProjectList(i);
+				storeTodos.setTodoList(project);
+				localStorage.removeItem(
+					project.title + " " + i.title + " todo info",
+					todo.todoInfo
 				);
+				if (
+					localStorage[project.title + " project todo list"].length ==
+					0
+				) {
+					localStorage.removeItem(
+						project.title + " project todo list"
+					);
+				}
+				todo.remove();
+			});
+
+			todo.append(todoRemoveBtn);
+
+			const todoEditButton = document.createElement("button");
+			todoEditButton.setAttribute("class", "btn");
+			todoEditButton.textContent = "Edit";
+
+			todoEditButton.addEventListener("click", (e) => {
+				todoEditButton.remove();
+				const editTodoPopup = document.createElement("div");
+				editTodoPopup.setAttribute("id", "editTodoPopup");
+
+				todo.append(editTodoPopup);
+
+				const todoTitleText = document.createElement("p");
+				todoTitleText.setAttribute("class", "todoTitleText");
+				todoTitleText.textContent = "Title:";
+				editTodoPopup.append(todoTitleText);
+
+				const todoTitleInput = document.createElement("input");
+				todoTitleInput.setAttribute("class", "todoTitleInput");
+				todoTitleInput.value = i.title;
+				editTodoPopup.append(todoTitleInput);
+
+				const todoDueText = document.createElement("p");
+				todoDueText.setAttribute("id", "todoDueText");
+				todoDueText.textContent = "Due:";
+				editTodoPopup.append(todoDueText);
+
+				const todoDueDateInput = document.createElement("input");
+				todoDueDateInput.setAttribute("class", "todoDueDateInput");
+				todoDueDateInput.setAttribute("type", "date");
+				todoDueDateInput.value = i.dueDate;
+				editTodoPopup.append(todoDueDateInput);
+
+				const todoPriorityLabel = document.createElement("label");
+				todoPriorityLabel.setAttribute("for", "todoPriorityInput");
+				todoPriorityLabel.textContent = "Priority: ";
+
+				const todoPriorityInput = document.createElement("select");
+				todoPriorityInput.setAttribute("name", "todoPriorityInput");
+				todoPriorityInput.setAttribute("class", "todoPriorityInput");
+
+				const todoPriorityLow = document.createElement("option");
+				todoPriorityLow.setAttribute("value", "Low");
+				todoPriorityLow.textContent = "Low";
+
+				const todoPriorityMed = document.createElement("option");
+				todoPriorityMed.setAttribute("value", "Medium");
+				todoPriorityMed.textContent = "Medium";
+
+				const todoPriorityHigh = document.createElement("option");
+				todoPriorityHigh.setAttribute("value", "High");
+				todoPriorityHigh.textContent = "High";
+
+				todoPriorityInput.append(
+					todoPriorityHigh,
+					todoPriorityMed,
+					todoPriorityLow
+				);
+
+				editTodoPopup.append(todoPriorityLabel, todoPriorityInput);
+
+				const todoNoteInputLabel = document.createElement("label");
+				todoNoteInputLabel.setAttribute("class", "todoNoteInputLabel");
+				todoNoteInputLabel.setAttribute("for", "todoNoteInput");
+				todoNoteInputLabel.textContent = "Note:";
+
+				const todoNoteInput = document.createElement("input");
+				todoNoteInput.setAttribute("class", "todoNoteInput");
+
+				editTodoPopup.append(todoNoteInputLabel, todoNoteInput);
+
+				const noNameError = document.createElement("p");
+				noNameError.setAttribute("class", "noNameError");
+				noNameError.textContent = "Enter a name!";
+
+				const todoSubmitBtn = document.createElement("button");
+				todoSubmitBtn.setAttribute("class", "btn");
+				todoSubmitBtn.textContent = "Save";
+				todoSubmitBtn.addEventListener("click", (e) => {
+					if (todoTitleInput.value == "") {
+						if (!editTodoPopup.contains(noNameError)) {
+							editTodoPopup.append(noNameError);
+							return;
+						}
+					} else {
+						const todoTitleInput = document.querySelector(
+							".todoTitleInput"
+						);
+
+						const editedTodo = todoFactory(
+							todoTitleInput.value,
+							todoDueDateInput.value,
+							todoPriorityInput.value,
+							todoNoteInput.value
+						);
+						project.projectTodoList.splice(
+							project.projectTodoList.indexOf(i),
+							1,
+							editedTodo
+						);
+						project.projectTodoListTitles.splice(
+							project.projectTodoListTitles.indexOf(i),
+							1,
+							editedTodo.title
+						);
+						localStorage.removeItem(
+							project.title + " " + i.title + " todo info"
+						);
+
+						if (content.contains(todoContainer)) {
+							todoContainer.remove();
+						}
+
+						storeTodos.setTodoList(project);
+						createTodos();
+						renderToDoObjects(project);
+						todoCompleteBtn.insertAdjacentElement(
+							"beforebegin",
+							todoEditButton
+						);
+					}
+				});
+				editTodoPopup.append(todoSubmitBtn);
+			});
+
+			todo.append(todoEditButton);
+
+			//Todo complete button
+
+			const todoCompleteBtn = document.createElement("button");
+			todoCompleteBtn.setAttribute("class", "btn");
+			todoCompleteBtn.textContent = "Complete";
+
+			todoCompleteBtn.addEventListener("click", function (e) {
+				switch (i.doneStatus) {
+					case "Incomplete":
+						const completeTodo = todoFactory(
+							i.title,
+							i.dueDate,
+							i.priority,
+							i.note,
+							"Complete"
+						);
+						todo.setAttribute("class", "todoCompleted");
+						project.projectTodoList.splice(
+							project.projectTodoList.indexOf(i),
+							1,
+							completeTodo
+						);
+						project.projectTodoListTitles.splice(
+							project.projectTodoListTitles.indexOf(i),
+							1,
+							completeTodo.title
+						);
+						break;
+
+					case "Complete":
+						const incompleteTodo = todoFactory(
+							i.title,
+							i.dueDate,
+							i.priority,
+							i.note,
+							"Incomplete"
+						);
+						todo.setAttribute("class", "todo");
+						project.projectTodoList.splice(
+							project.projectTodoList.indexOf(i),
+							1,
+							incompleteTodo
+						);
+						project.projectTodoListTitles.splice(
+							project.projectTodoListTitles.indexOf(i),
+							1,
+							incompleteTodo.title
+						);
+						break;
+				}
+				if (content.contains(todoContainer)) {
+					todoContainer.remove();
+				}
+
+				localStorage.removeItem(
+					project.title + " " + i.title + " todo info"
+				);
+				storeTodos.setTodoList(project);
+				createTodos();
+				renderToDoObjects(project);
+			});
+
+			todo.append(todoCompleteBtn);
+
+			todoContainer.insertAdjacentElement("afterbegin", todo);
+		});
+	}
+
+	//Todo create functionality
+	const todoCreateBtnContainer = document.createElement("div");
+	todoCreateBtnContainer.setAttribute("class", "todoCreateBtnContainer");
+
+	const todoCreateBtn = document.createElement("button");
+	todoCreateBtn.setAttribute("class", "todoCreateBtn");
+	todoCreateBtn.textContent = "New Todo";
+
+	todoCreateBtn.addEventListener("click", (e) => {
+		todoCreateBtn.remove();
+
+		const createTodoPopup = document.createElement("div");
+		createTodoPopup.setAttribute("id", "createTodoPopup");
+		todoContainer.insertAdjacentElement("afterbegin", createTodoPopup);
+
+		const todoTitleText = document.createElement("p");
+		todoTitleText.setAttribute("id", "todoTitleText");
+		todoTitleText.textContent = "Title:";
+		createTodoPopup.append(todoTitleText);
+
+		const todoTitleInput = document.createElement("input");
+		todoTitleInput.setAttribute("class", "todoTitleInput");
+		createTodoPopup.append(todoTitleInput);
+
+		const todoDueText = document.createElement("p");
+		todoDueText.setAttribute("id", "todoDueText");
+		todoDueText.textContent = "Due:";
+		createTodoPopup.append(todoDueText);
+
+		const todoDueDateInput = document.createElement("input");
+		todoDueDateInput.setAttribute("class", "todoDueDateInput");
+		todoDueDateInput.setAttribute("type", "date");
+		createTodoPopup.append(todoDueDateInput);
+
+		const todoPriorityLabel = document.createElement("label");
+		todoPriorityLabel.setAttribute("for", "todoPriorityInput");
+		todoPriorityLabel.textContent = "Priority:";
+
+		const todoPriorityInput = document.createElement("select");
+		todoPriorityInput.setAttribute("name", "todoPriorityInput");
+		todoPriorityInput.setAttribute("class", "todoPriorityInput");
+
+		const todoPriorityLow = document.createElement("option");
+		todoPriorityLow.setAttribute("value", "Low");
+		todoPriorityLow.textContent = "Low";
+
+		const todoPriorityMed = document.createElement("option");
+		todoPriorityMed.setAttribute("value", "Medium");
+		todoPriorityMed.textContent = "Medium";
+
+		const todoPriorityHigh = document.createElement("option");
+		todoPriorityHigh.setAttribute("value", "High");
+		todoPriorityHigh.textContent = "High";
+
+		todoPriorityInput.append(
+			todoPriorityHigh,
+			todoPriorityMed,
+			todoPriorityLow
+		);
+
+		createTodoPopup.append(todoPriorityLabel, todoPriorityInput);
+
+		const todoNoteInputLabel = document.createElement("label");
+		todoNoteInputLabel.setAttribute("class", "todoNoteInputLabel");
+		todoNoteInputLabel.setAttribute("for", "todoNoteInput");
+		todoNoteInputLabel.textContent = "Note:";
+
+		const todoNoteInput = document.createElement("input");
+		todoNoteInput.setAttribute("class", "todoNoteInput");
+
+		createTodoPopup.append(todoNoteInputLabel, todoNoteInput);
+
+		const noNameError = document.createElement("p");
+		noNameError.setAttribute("class", "noNameError");
+		noNameError.textContent = "Enter a name!";
+
+		const todoSubmitBtn = document.createElement("button");
+		todoSubmitBtn.setAttribute("class", "btn");
+		todoSubmitBtn.textContent = "Save";
+		todoSubmitBtn.addEventListener("click", (e) => {
+			if (todoTitleInput.value == "") {
+				if (!createTodoPopup.contains(noNameError)) {
+					createTodoPopup.append(noNameError);
+					return;
+				}
+			} else {
+				const todoTitleInput = document.querySelector(
+					".todoTitleInput"
+				);
+				const newTodo = todoFactory(
+					todoTitleInput.value,
+					todoDueDateInput.value,
+					todoPriorityInput.value,
+					todoNoteInput.value
+				);
+				project.projectTodoList.push(newTodo);
+				if (content.contains(todoContainer)) {
+					todoContainer.remove();
+				}
+
+				storeTodos.setTodoList(project);
+				createTodos();
+				project.projectTodoListTitles.push(todoTitleInput.value);
+				renderToDoObjects(project);
+				todoCreateBtnContainer.append(todoCreateBtn);
 			}
 		});
-		addEventListeners();
-	};
-
-	return { addToDo, loadTasks, markAsDone };
-})();
-
-export default toDo;
+		createTodoPopup.append(todoSubmitBtn);
+	});
+	todoCreateBtnContainer.append(todoCreateBtn);
+	todoContainer.insertAdjacentElement("afterbegin", todoCreateBtnContainer);
+	projectAndTodoContainer.append(todoContainer);
+};
+export { renderToDoObjects };
