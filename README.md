@@ -2,7 +2,7 @@
 
 > This is a To-Do list application built with plain javascript and webpack. You can add tasks to your projects, add projects, modify tasks and delete your projects.
 
-![](ht)
+![screenshot](dist/img/screenshot.jpeg)
 
 
 ## Built With
@@ -14,7 +14,7 @@
 
 
 ## Live Demo
-[Live Demo](https/)
+[Live Demo](https://t-yanick.github.io/ToDo-JS/)
 
 ## Getting Started
 
