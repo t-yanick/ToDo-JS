@@ -11,7 +11,6 @@ const content = document.querySelector('#content');
 
 // Render a project
 const renderProject = (project) => {
-  const projectsListContainer;
   const projectDiv = document.createElement('div');
 
   projectDiv.setAttribute('class', 'project');
@@ -53,7 +52,6 @@ const renderProject = (project) => {
           `${project.title} ${i.title} todo info`,
         );
       });
-      const todoContainer
       localStorage.removeItem(`${project.title} project todo list`);
       removeProject(project);
       storeProjects.removeProjectFromList(project);
@@ -103,7 +101,6 @@ const renderProjectCreateBtn = (() => {
   projectCreateBtnContainer.setAttribute('id', 'projectCreateBtnContainer');
 
   const projectCreateBtn = document.createElement('button');
-  const projects;
   projectCreateBtn.setAttribute('id', 'projectCreateBtn');
   projectCreateBtn.textContent = 'Create Project';
   projectCreateBtn.addEventListener('click', (e) => {
@@ -153,7 +150,6 @@ const renderProjectCreateBtn = (() => {
         projectTitleInput.remove();
         projectSubmitBtn.remove();
         projectCreateBtnContainer.append(projectCreateBtn);
-        const projectsListContainer;
         projectsListContainer.innerHTML = '';
         renderProjectList();
       }

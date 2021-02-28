@@ -19,7 +19,14 @@
         "arrow-parens": "off",
         "no-tabs": 0,
         "no-unused-vars": "off",
-        "import/prefer-default-export": "off"
+        "import/prefer-default-export": "off",
+        "no-case-declarations": "off",
+        "no-use-before-define": "off",
+        "default-case": "off",
+        "no-undef": "off",
+        "import/no-cycle": "off",
+        "consistent-return": "off",
+        "no-const-assign": "off"
     },
     "ignorePatterns": [
         "dist/",
