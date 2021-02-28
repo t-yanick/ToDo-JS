@@ -1,29 +1,29 @@
-import { projectObjectList } from './project-object.js';
+import { projectObjectList } from './project-object';
 
 // Keep a list of projects, added to localStorage
 const projectList = [];
 
 // Create the default project if no others are present
-if (localStorage.length == 0) {
+if (localStorage.length === 0) {
   projectList.push('Default Project');
 }
 
 const storeProjects = (() => {
   function setProjectList() {
     projectList.forEach((project) => {
-      if (project != '') {
+      if (project !== '') {
         localStorage.setItem('projectList', projectList);
       }
     });
   }
 
   function getProjectList() {
-    if (localStorage.length == 0) {
+    if (localStorage.length === 0) {
       setProjectList();
     } else {
       const storedProjectList = localStorage.projectList.split(',');
       storedProjectList.forEach((project) => {
-        if (!projectList.includes(project) || projectList.length == 0) {
+        if (!projectList.includes(project) || projectList.length === 0) {
           projectList.push(project);
         }
       });
@@ -42,7 +42,7 @@ const storeProjects = (() => {
     if (projectList.length > 1) {
       projectList.splice(projectList.indexOf(project.title), 1);
       setProjectList();
-    } else if (projectList.length == 1) {
+    } else if (projectList.length === 1) {
       projectList.pop();
       localStorage.removeItem('projectList');
     }
@@ -78,7 +78,7 @@ const storeTodos = (() => {
     projectObjectList.forEach((project) => {
       if (
         localStorage.getItem(`${project.title} project todo list`)
-				!= null
+        != null
       ) {
         const storedProjectTodoListTitles = localStorage
           .getItem(`${project.title} project todo list`)

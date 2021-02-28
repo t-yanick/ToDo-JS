@@ -1,4 +1,4 @@
-import { projectObjectList } from './project-object.js';
+import { projectObjectList } from './project-object';
 
 const todoFactory = (
   title,
@@ -27,7 +27,7 @@ function createTodos() {
           `${project.title} ${title} todo info`,
         );
 
-        if (localTodos != '' && localTodos != undefined) {
+        if (localTodos !== '' && localTodos !== undefined) {
           const todoInfo = localStorage[
             `${project.title} ${title} todo info`
           ].split(',');

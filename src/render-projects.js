@@ -2,15 +2,16 @@ import {
   projectObjectList,
   createProjects,
   removeProject,
-} from './project-object.js';
-import { projectList, storeProjects, storeTodos } from './storage.js';
-import { createTodos } from './todo-object.js';
-import { renderToDoObjects } from './render-todo-objects.js';
+} from './project-object';
+import { projectList, storeProjects, storeTodos } from './storage';
+import { createTodos } from './todo-object';
+import { renderToDoObjects } from './render-todo-objects';
 
 const content = document.querySelector('#content');
 
 // Render a project
 const renderProject = (project) => {
+  const projectsListContainer;
   const projectDiv = document.createElement('div');
 
   projectDiv.setAttribute('class', 'project');
@@ -41,7 +42,7 @@ const renderProject = (project) => {
     );
 
     const removeProjectCheckText = document.createElement('p');
-    removeProjectCheckText.textContent =			'Are you sure you want to remove this project? \n All todo items will be lost.';
+    removeProjectCheckText.textContent = 'Are you sure you want to remove this project? \n All todo items will be lost.';
 
     const removeProjectCheckYes = document.createElement('button');
     removeProjectCheckYes.setAttribute('class', 'removeCheckBtn');
@@ -52,6 +53,7 @@ const renderProject = (project) => {
           `${project.title} ${i.title} todo info`,
         );
       });
+      const todoContainer
       localStorage.removeItem(`${project.title} project todo list`);
       removeProject(project);
       storeProjects.removeProjectFromList(project);
@@ -101,6 +103,7 @@ const renderProjectCreateBtn = (() => {
   projectCreateBtnContainer.setAttribute('id', 'projectCreateBtnContainer');
 
   const projectCreateBtn = document.createElement('button');
+  const projects;
   projectCreateBtn.setAttribute('id', 'projectCreateBtn');
   projectCreateBtn.textContent = 'Create Project';
   projectCreateBtn.addEventListener('click', (e) => {
@@ -138,18 +141,19 @@ const renderProjectCreateBtn = (() => {
             projectExistsError,
           );
         }
-      } else if (projectTitleInput.value == '') {
+      } else if (projectTitleInput.value === '') {
         createProjectPopup.insertAdjacentElement(
           'afterend',
           noNameError,
         );
-      } else if (projectTitleInput.value != '') {
+      } else if (projectTitleInput.value !== '') {
         storeProjects.addProjectToList(projectTitleInput.value);
         createProjects();
         createProjectPopup.remove();
         projectTitleInput.remove();
         projectSubmitBtn.remove();
         projectCreateBtnContainer.append(projectCreateBtn);
+        const projectsListContainer;
         projectsListContainer.innerHTML = '';
         renderProjectList();
       }

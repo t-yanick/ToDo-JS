@@ -1,5 +1,5 @@
-import { todoFactory, createTodos } from './todo-object.js';
-import { storeTodos } from './storage.js';
+import { todoFactory, createTodos } from './todo-object';
+import { storeTodos } from './storage';
 
 const content = document.querySelector('#content');
 
@@ -11,13 +11,13 @@ const renderToDoObjects = (project) => {
   if (project.projectTodoList.length > 0) {
     project.projectTodoList.forEach((i) => {
       const todo = document.createElement('div');
-      if (i.doneStatus == 'Complete') {
+      if (i.doneStatus === 'Complete') {
         todo.setAttribute('class', 'todoCompleted');
-      } else if (i.doneStatus == 'Incomplete' && i.priority == 'High') {
+      } else if (i.doneStatus === 'Incomplete' && i.priority === 'High') {
         todo.setAttribute('class', 'todoHighPriority');
-      } else if (i.doneStatus == 'Incomplete' && i.priority == 'Medium') {
+      } else if (i.doneStatus === 'Incomplete' && i.priority === 'Medium') {
         todo.setAttribute('class', 'todoMediumPriority');
-      } else if (i.doneStatus == 'Incomplete' && i.priority == 'Low') {
+      } else if (i.doneStatus === 'Incomplete' && i.priority === 'Low') {
         todo.setAttribute('class', 'todoLowPriority');
       }
 
@@ -33,7 +33,7 @@ const renderToDoObjects = (project) => {
 
       const todoDueDateHeading = document.createElement('p');
       todoDueDateHeading.setAttribute('class', 'todoDueDateHeading');
-      if (i.dueDate != undefined && i.dueDate != '') {
+      if (i.dueDate !== undefined && i.dueDate !== '') {
         todoDueDateHeading.textContent = `Due Date: ${i.dueDate}`;
       }
 
@@ -49,7 +49,7 @@ const renderToDoObjects = (project) => {
 
       const todoNote = document.createElement('p');
       todoNote.setAttribute('class', 'todoNote');
-      if (i.note != undefined && todo.note != '') {
+      if (i.note !== undefined && todo.note !== '') {
         todoNote.textContent = `Note: \n${i.note}`;
       }
 
@@ -76,7 +76,7 @@ const renderToDoObjects = (project) => {
         );
         if (
           localStorage[`${project.title} project todo list`].length
-					== 0
+          === 0
         ) {
           localStorage.removeItem(
             `${project.title} project todo list`,
@@ -165,7 +165,7 @@ const renderToDoObjects = (project) => {
         todoSubmitBtn.setAttribute('class', 'btn');
         todoSubmitBtn.textContent = 'Save';
         todoSubmitBtn.addEventListener('click', (e) => {
-          if (todoTitleInput.value == '') {
+          if (todoTitleInput.value === '') {
             if (!editTodoPopup.contains(noNameError)) {
               editTodoPopup.append(noNameError);
             }
@@ -360,7 +360,7 @@ const renderToDoObjects = (project) => {
     todoSubmitBtn.setAttribute('class', 'btn');
     todoSubmitBtn.textContent = 'Save';
     todoSubmitBtn.addEventListener('click', (e) => {
-      if (todoTitleInput.value == '') {
+      if (todoTitleInput.value === '') {
         if (!createTodoPopup.contains(noNameError)) {
           createTodoPopup.append(noNameError);
         }

@@ -1,4 +1,4 @@
-import { storeProjects, projectList } from './storage.js';
+import { storeProjects, projectList } from './storage';
 
 const projectFactory = (title) => {
   const projectTodoList = [];
@@ -27,7 +27,7 @@ const projectFactory = (title) => {
 };
 
 // Project objects stored in a list
-let projectObjectList = [];
+const projectObjectList = [];
 
 // Create the project objects and push them to the above list
 function createProjects() {
@@ -48,7 +48,7 @@ function createProjects() {
 function removeProject(project) {
   if (projectObjectList.length > 1) {
     projectObjectList.splice(projectObjectList.indexOf(project), 1);
-  } else if (projectObjectList.length == 1) {
+  } else if (projectObjectList.length === 1) {
     projectObjectList = [];
   }
 }
